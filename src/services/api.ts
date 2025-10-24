@@ -15,26 +15,26 @@ const api = axios.create({
 
 export const ativosService = {
   listarAtivos: async (): Promise<Ativo[]> => {
-    const response = await api.get("/ativos");
+    const response = await api.get("/ativo");
     return response.data;
   },
 
   cadastrarAtivo: async (ativo: AtivoInput): Promise<Ativo> => {
-    const response = await api.post("/ativos", ativo);
+    const response = await api.post("/ativo", ativo);
     return response.data;
   },
 
   atualizarAtivo: async (id: string, ativo: AtivoInput): Promise<Ativo> => {
-    const response = await api.put(`/ativos/${id}`, ativo);
+    const response = await api.put(`/ativo/${id}`, ativo);
     return response.data;
   },
 
   deletarAtivo: async (id: string): Promise<void> => {
-    await api.delete(`/ativos/${id}`);
+    await api.delete(`/ativo/${id}`);
   },
 
   tokenizarAtivo: async (id: string, data: TokenizacaoInput) => {
-    const response = await api.post(`/ativos/${id}/tokenizar`, data);
+    const response = await api.post(`/ativo/${id}/tokenizar`, data);
     return response.data;
   },
 };

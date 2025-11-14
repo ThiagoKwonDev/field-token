@@ -1,3 +1,6 @@
+// -------------------------
+// ATIVOS
+// -------------------------
 export interface Ativo {
   id: string;
   nome: string;
@@ -11,19 +14,27 @@ export interface AtivoInput {
   valor: number;
 }
 
-export interface TokenizacaoInput {
-  quantidadeTokens: number;
+export interface AtualizarAtivoInput {
+  nome?: string;
+  tipo?: string;
+  valor?: number;
 }
 
-export interface Token {
-  id: string;
-  ativoId: string;
-  valorUnitario: number;
-  proprietario: string;
+// -------------------------
+// USUÁRIOS
+// -------------------------
+export interface Usuario {
+  id: number;
+  email: string;
+  senha: string;
 }
 
-export interface Tokenizacao {
-  ativoId: string;
-  quantidadeTokens: number;
-  tokens: Token[];
+export interface UsuarioInput {
+  email: string;
+  senha: string;
+}
+
+export interface AtualizarUsuarioInput {
+  email?: string;
+  senha?: string;
 }

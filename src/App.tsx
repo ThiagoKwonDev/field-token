@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Header from './components/Header';
 import Dashboard from './components/Dashboard';
 import AtivosManager from './components/AtivosManager';
-import TokensManager from './components/TokensManager';
+import TokensManager from './components/UsersManager';
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');

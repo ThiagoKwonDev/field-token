@@ -1,5 +1,5 @@
-import React from 'react';
-import { Building, TrendingUp } from 'lucide-react';
+import React from "react";
+import { Building, TrendingUp } from "lucide-react";
 
 interface HeaderProps {
   activeTab: string;
@@ -11,6 +11,7 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
     <header className="bg-white shadow-md border-b border-gray-200">
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
+          {/* Logo */}
           <div className="flex items-center space-x-2">
             <Building className="h-8 w-8 text-green-600" />
             <h1 className="text-2xl font-bold text-gray-800">FieldToken</h1>
@@ -18,56 +19,49 @@ const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
               v1.0
             </span>
           </div>
-          
+
+          {/* Desktop Nav */}
           <nav className="hidden md:flex space-x-8">
             <button
-              onClick={() => setActiveTab('dashboard')}
+              onClick={() => setActiveTab("dashboard")}
               className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                activeTab === 'dashboard'
-                  ? 'bg-green-100 text-green-700 shadow-sm'
-                  : 'text-gray-600 hover:text-green-600 hover:bg-green-50'
+                activeTab === "dashboard"
+                  ? "bg-green-100 text-green-700 shadow-sm"
+                  : "text-gray-600 hover:text-green-600 hover:bg-green-50"
               }`}
             >
               Dashboard
             </button>
+
             <button
-              onClick={() => setActiveTab('ativos')}
+              onClick={() => setActiveTab("ativos")}
               className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                activeTab === 'ativos'
-                  ? 'bg-green-100 text-green-700 shadow-sm'
-                  : 'text-gray-600 hover:text-green-600 hover:bg-green-50'
+                activeTab === "ativos"
+                  ? "bg-green-100 text-green-700 shadow-sm"
+                  : "text-gray-600 hover:text-green-600 hover:bg-green-50"
               }`}
             >
               Ativos
             </button>
-            <button
-              onClick={() => setActiveTab('tokens')}
-              className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                activeTab === 'tokens'
-                  ? 'bg-green-100 text-green-700 shadow-sm'
-                  : 'text-gray-600 hover:text-green-600 hover:bg-green-50'
-              }`}
-            >
-              Tokens
-            </button>
           </nav>
 
+          {/* Status */}
           <div className="flex items-center space-x-2 text-green-600">
             <TrendingUp className="h-5 w-5" />
             <span className="text-sm font-medium">Sistema Online</span>
           </div>
         </div>
 
-        {/* Mobile Navigation */}
+        {/* Mobile Nav */}
         <nav className="md:hidden mt-4 flex space-x-1">
-          {['dashboard', 'ativos', 'tokens'].map((tab) => (
+          {["dashboard", "ativos"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`flex-1 py-2 px-3 text-sm rounded-lg font-medium transition-all duration-200 ${
                 activeTab === tab
-                  ? 'bg-green-100 text-green-700'
-                  : 'text-gray-600 hover:text-green-600 hover:bg-green-50'
+                  ? "bg-green-100 text-green-700"
+                  : "text-gray-600 hover:text-green-600 hover:bg-green-50"
               }`}
             >
               {tab.charAt(0).toUpperCase() + tab.slice(1)}

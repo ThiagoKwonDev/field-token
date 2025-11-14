@@ -1,59 +1,113 @@
 // services/api.ts
+
 import axios from "axios";
 import {
   Ativo,
+  Usuario,
   AtivoInput,
-  TokenizacaoInput,
-  Tokenizacao,
-  Token,
+  UsuarioInput,
+  AtualizarAtivoInput,
+  AtualizarUsuarioInput,
 } from "../types";
 
-const api = axios.create({
-  baseURL: "https://sandbox.fieldtoken.com/v1",
+export const api = axios.create({
+  baseURL: "http://52.248.110.25",
   headers: { "Content-Type": "application/json" },
 });
 
+
+
+// Helper para header opcional x-correlation-id
+function withCorrelation(correlationId?: string) {
+  return correlationId
+    ? { headers: { "x-correlation-id": correlationId } }
+    : {};
+}
+
+
+// =========================================
+// =============== ATIVOS ===================
+// =========================================
+
 export const ativosService = {
+  // GET /bff/ativo
   listarAtivos: async (): Promise<Ativo[]> => {
-    const response = await api.get("/ativo");
+    const response = await api.get("/bff/ativo");
     return response.data;
   },
 
-  cadastrarAtivo: async (ativo: AtivoInput): Promise<Ativo> => {
-    const response = await api.post("/ativo", ativo);
+// POST /bff/ativo  (event-driven)
+cadastrarAtivo: async (
+  ativo: AtivoInput,
+  correlationId?: string
+): Promise<void> => {
+  await api.post("/bff/ativo", ativo, withCorrelation(correlationId));
+},
+
+  // GET /bff/ativo/{id}
+  buscarAtivoPorId: async (id: string): Promise<Ativo> => {
+    const response = await api.get(`/bff/ativo/${id}`);
     return response.data;
   },
 
-  atualizarAtivo: async (id: string, ativo: AtivoInput): Promise<Ativo> => {
-    const response = await api.put(`/ativo/${id}`, ativo);
+  // GET /bff/ativo/usuario/{usuarioId}
+  listarAtivosPorUsuario: async (usuarioId: string): Promise<Ativo[]> => {
+    const response = await api.get(`/bff/ativo/usuario/${usuarioId}`);
     return response.data;
   },
 
-  deletarAtivo: async (id: string): Promise<void> => {
-    await api.delete(`/ativo/${id}`);
+  // PATCH /bff/ativo/{id}
+  atualizarAtivo: async (
+    id: string,
+    ativo: AtualizarAtivoInput
+  ): Promise<Ativo> => {
+    const response = await api.patch(`/bff/ativo/${id}`, ativo);
+    return response.data;
   },
 
-  tokenizarAtivo: async (id: string, data: TokenizacaoInput) => {
-    const response = await api.post(`/ativo/${id}/tokenizar`, data);
-    return response.data;
+  // DELETE /bff/ativo/{id}
+  removerAtivo: async (id: string): Promise<void> => {
+    await api.delete(`/bff/ativo/${id}`);
   },
 };
 
-export const tokensService = {
-  listarTokens: async (): Promise<Token[]> => {
-    const { data } = await api.get("/tokens");
-    return data;
+// =========================================
+// =============== USUÁRIOS =================
+// =========================================
+
+export const usuariosService = {
+  // GET /bff/usuario
+  listarUsuarios: async (): Promise<Usuario[]> => {
+    const response = await api.get("/bff/usuario");
+    return response.data;
   },
-  criarToken: async (novoToken: Omit<Token, "id">): Promise<Token> => {
-    const { data } = await api.post("/tokens", novoToken);
-    return data;
+
+// POST /bff/usuario (event-driven)
+cadastrarUsuario: async (
+  usuario: UsuarioInput,
+  correlationId?: string
+): Promise<void> => {
+  await api.post("/bff/usuario", usuario, withCorrelation(correlationId));
+},
+
+  // GET /bff/usuario/{id}
+  buscarUsuarioPorId: async (id: number): Promise<Usuario> => {
+    const response = await api.get(`/bff/usuario/${id}`);
+    return response.data;
   },
-  atualizarToken: async (id: string, token: Partial<Token>): Promise<Token> => {
-    const { data } = await api.put(`/tokens/${id}`, token);
-    return data;
+
+  // PUT /bff/usuario/{id}
+  atualizarUsuario: async (
+    id: number,
+    usuario: AtualizarUsuarioInput
+  ): Promise<Usuario> => {
+    const response = await api.put(`/bff/usuario/${id}`, usuario);
+    return response.data;
   },
-  excluirToken: async (id: string): Promise<void> => {
-    await api.delete(`/tokens/${id}`);
+
+  // DELETE /bff/usuario/{id}
+  removerUsuario: async (id: number): Promise<void> => {
+    await api.delete(`/bff/usuario/${id}`);
   },
 };
 

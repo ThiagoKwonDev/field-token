@@ -1,44 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import { Building2, Coins, TrendingUp, DollarSign } from 'lucide-react';
-import { ativosService, tokensService } from '../services/api';
-import { Ativo, Token } from '../types';
+import React, { useState, useEffect } from "react";
+import { Building2, TrendingUp, DollarSign } from "lucide-react";
+import { ativosService } from "../services/api";
+import { Ativo } from "../types";
 
 const Dashboard: React.FC = () => {
   const [ativos, setAtivos] = useState<Ativo[]>([]);
-  const [tokens, setTokens] = useState<Token[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadData = async () => {
+    const load = async () => {
       try {
         setLoading(true);
-        // Para demonstração, usaremos dados mock já que a API sandbox pode não estar disponível
-        const mockAtivos: Ativo[] = [
-          { id: '1', nome: 'Fazenda Primavera', tipo: 'Imóvel Rural', valor: 1000000 },
-          { id: '2', nome: 'Sítio Bela Vista', tipo: 'Imóvel Rural', valor: 500000 },
-          { id: '3', nome: 'Fazenda São João', tipo: 'Imóvel Rural', valor: 2000000 },
-        ];
-        
-        const mockTokens: Token[] = [
-          { id: 'tok_001', ativoId: '1', valorUnitario: 1000, proprietario: 'user_001' },
-          { id: 'tok_002', ativoId: '1', valorUnitario: 1000, proprietario: 'user_002' },
-          { id: 'tok_003', ativoId: '2', valorUnitario: 500, proprietario: 'user_003' },
-        ];
-
-        setAtivos(mockAtivos);
-        setTokens(mockTokens);
+        const data = await ativosService.listarAtivos();
+        setAtivos(data);
       } catch (error) {
-        console.error('Erro ao carregar dados:', error);
+        console.error("Erro ao carregar ativos:", error);
       } finally {
         setLoading(false);
       }
     };
-
-    loadData();
+    load();
   }, []);
 
-  const valorTotalAtivos = ativos.reduce((total, ativo) => total + ativo.valor, 0);
-  const valorTotalTokens = tokens.reduce((total, token) => total + token.valorUnitario, 0);
+  const valorTotalAtivos = ativos.reduce((sum, ativo) => sum + ativo.valor, 0);
 
   if (loading) {
     return (
@@ -50,9 +34,11 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="space-y-8">
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+      {/* Cards de estatísticas */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        {/* Total de Ativos */}
+        <div className="bg-white p-6 rounded-xl shadow-sm border hover:shadow-md transition">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Total de Ativos</p>
@@ -64,26 +50,15 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+        {/* Valor total dos ativos */}
+        <div className="bg-white p-6 rounded-xl shadow-sm border hover:shadow-md transition">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Tokens Gerados</p>
-              <p className="text-2xl font-bold text-gray-900">{tokens.length}</p>
-            </div>
-            <div className="p-3 bg-blue-100 rounded-full">
-              <Coins className="h-6 w-6 text-blue-600" />
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Valor dos Ativos</p>
+              <p className="text-sm font-medium text-gray-600">Valor Total dos Ativos</p>
               <p className="text-2xl font-bold text-gray-900">
-                {new Intl.NumberFormat('pt-BR', {
-                  style: 'currency',
-                  currency: 'BRL'
+                {new Intl.NumberFormat("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
                 }).format(valorTotalAtivos)}
               </p>
             </div>
@@ -93,74 +68,56 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+        {/* Maior Ativo */}
+        <div className="bg-white p-6 rounded-xl shadow-sm border hover:shadow-md transition">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Valor dos Tokens</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {new Intl.NumberFormat('pt-BR', {
-                  style: 'currency',
-                  currency: 'BRL'
-                }).format(valorTotalTokens)}
+              <p className="text-sm font-medium text-gray-600">Maior Ativo</p>
+              <p className="text-lg font-bold text-gray-900">
+                {ativos.length > 0
+                  ? ativos.reduce((a, b) => (a.valor > b.valor ? a : b)).nome
+                  : "Nenhum"}
               </p>
             </div>
-            <div className="p-3 bg-green-100 rounded-full">
-              <TrendingUp className="h-6 w-6 text-green-600" />
+            <div className="p-3 bg-blue-100 rounded-full">
+              <TrendingUp className="h-6 w-6 text-blue-600" />
             </div>
           </div>
         </div>
+
       </div>
 
-      {/* Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Ativos Recentes */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100">
-          <div className="p-6 border-b border-gray-100">
-            <h3 className="text-lg font-semibold text-gray-900">Ativos Recentes</h3>
-          </div>
-          <div className="p-6 space-y-4">
-            {ativos.slice(0, 3).map((ativo) => (
-              <div key={ativo.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                <div>
-                  <p className="font-medium text-gray-900">{ativo.nome}</p>
-                  <p className="text-sm text-gray-600">{ativo.tipo}</p>
-                </div>
-                <div className="text-right">
-                  <p className="font-semibold text-gray-900">
-                    {new Intl.NumberFormat('pt-BR', {
-                      style: 'currency',
-                      currency: 'BRL'
-                    }).format(ativo.valor)}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* Lista de ativos recentes */}
+      <div className="bg-white rounded-xl shadow-sm border">
+        <div className="p-6 border-b">
+          <h3 className="text-lg font-semibold text-gray-900">Ativos Recentes</h3>
         </div>
 
-        {/* Tokens Recentes */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100">
-          <div className="p-6 border-b border-gray-100">
-            <h3 className="text-lg font-semibold text-gray-900">Tokens Recentes</h3>
-          </div>
-          <div className="p-6 space-y-4">
-            {tokens.slice(0, 3).map((token) => (
-              <div key={token.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                <div>
-                  <p className="font-medium text-gray-900">{token.id}</p>
-                  <p className="text-sm text-gray-600">Proprietário: {token.proprietario}</p>
-                </div>
-                <div className="text-right">
-                  <p className="font-semibold text-gray-900">
-                    {new Intl.NumberFormat('pt-BR', {
-                      style: 'currency',
-                      currency: 'BRL'
-                    }).format(token.valorUnitario)}
-                  </p>
-                </div>
+        <div className="p-6 space-y-4">
+          {ativos.slice(0, 5).map((ativo) => (
+            <div
+              key={ativo.id}
+              className="flex items-center justify-between bg-gray-50 rounded-lg p-4"
+            >
+              <div>
+                <p className="font-medium text-gray-900">{ativo.nome}</p>
+                <p className="text-sm text-gray-600">{ativo.tipo}</p>
               </div>
-            ))}
-          </div>
+
+              <p className="font-semibold text-gray-900">
+                {new Intl.NumberFormat("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                }).format(ativo.valor)}
+              </p>
+            </div>
+          ))}
+
+          {ativos.length === 0 && (
+            <p className="text-center text-gray-500 py-4">
+              Nenhum ativo cadastrado ainda.
+            </p>
+          )}
         </div>
       </div>
     </div>

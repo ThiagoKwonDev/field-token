@@ -79,6 +79,15 @@ const UsersManager: React.FC = () => {
           <h2 className="text-2xl font-bold text-gray-900">Usuários</h2>
           <p className="text-gray-600">Gerencie os usuários do sistema</p>
         </div>
+
+        {/* Botão para adicionar novo usuário */}
+        <button
+          onClick={resetForm}
+          className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+        >
+          <Plus className="h-5 w-5" />
+          <span>Novo Usuário</span>
+        </button>
       </div>
 
       {/* Form */}

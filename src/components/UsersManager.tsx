@@ -13,6 +13,7 @@ const UsersManager: React.FC = () => {
   });
 
   const [editingUser, setEditingUser] = useState<Usuario | null>(null);
+  const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
     loadUsuarios();
@@ -41,6 +42,7 @@ const UsersManager: React.FC = () => {
       }
 
       resetForm();
+      setShowForm(false);
       await loadUsuarios();
     } catch (error) {
       console.error("Erro ao salvar usuário:", error);
@@ -80,9 +82,12 @@ const UsersManager: React.FC = () => {
           <p className="text-gray-600">Gerencie os usuários do sistema</p>
         </div>
 
-        {/* Botão para adicionar novo usuário */}
+        {/* Botão para abrir o formulário em modo criação */}
         <button
-          onClick={resetForm}
+          onClick={() => {
+            resetForm();
+            setShowForm(true);
+          }}
           className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
         >
           <Plus className="h-5 w-5" />
@@ -90,59 +95,72 @@ const UsersManager: React.FC = () => {
         </button>
       </div>
 
-      {/* Form */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border">
-        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-          {editingUser ? (
-            <>
-              <Edit className="h-5 w-5 text-blue-600" /> Editar Usuário
-            </>
-          ) : (
-            <>
-              <Plus className="h-5 w-5 text-green-600" /> Novo Usuário
-            </>
-          )}
-        </h3>
+      {/* Modal de formulário */}
+      {showForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              {editingUser ? (
+                <>
+                  <Edit className="h-5 w-5 text-blue-600" /> Editar Usuário
+                </>
+              ) : (
+                <>
+                  <Plus className="h-5 w-5 text-green-600" /> Novo Usuário
+                </>
+              )}
+            </h3>
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input
-            required
-            type="email"
-            placeholder="E-mail"
-            value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            className="px-3 py-2 border border-gray-300 rounded-lg"
-          />
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <input
+                  required
+                  type="email"
+                  placeholder="E-mail"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                />
+              </div>
 
-          <input
-            required
-            type="password"
-            placeholder="Senha"
-            value={formData.senha}
-            onChange={(e) => setFormData({ ...formData, senha: e.target.value })}
-            className="px-3 py-2 border border-gray-300 rounded-lg"
-          />
+              <div>
+                <input
+                  required
+                  type="password"
+                  placeholder="Senha"
+                  value={formData.senha}
+                  onChange={(e) =>
+                    setFormData({ ...formData, senha: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                />
+              </div>
 
-          <div className="col-span-full flex gap-3 mt-2">
-            <button
-              type="submit"
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
-            >
-              {editingUser ? "Salvar Alterações" : "Criar Usuário"}
-            </button>
+              <div className="flex gap-3 mt-2">
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                >
+                  {editingUser ? "Salvar Alterações" : "Criar Usuário"}
+                </button>
 
-            {editingUser && (
-              <button
-                type="button"
-                onClick={resetForm}
-                className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition"
-              >
-                Cancelar
-              </button>
-            )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    resetForm();
+                    setShowForm(false);
+                  }}
+                  className="flex-1 px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </form>
           </div>
-        </form>
-      </div>
+        </div>
+      )}
 
       {/* Lista */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -161,6 +179,7 @@ const UsersManager: React.FC = () => {
                   onClick={() => {
                     setEditingUser(user);
                     setFormData({ email: user.email, senha: user.senha });
+                    setShowForm(true);
                   }}
                   className="p-1 rounded-full hover:bg-gray-100"
                 >
